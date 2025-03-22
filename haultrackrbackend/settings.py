@@ -31,15 +31,27 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Default apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # Third-party apps
+    'rest_framework',
+    'corsheaders',
+    
+    # Your apps
+    'eld_logs',
+    'route_planner',
 ]
 
 MIDDLEWARE = [
+    # Add corsheaders middleware at the top
+    'corsheaders.middleware.CorsMiddleware',
+    # Other middleware...
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -48,6 +60,15 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Allow requests from your React app's domain
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # For local development
+    "https://haul-trackr.vercel.app/",  # For production
+]
+
+# For simplicity in development
+CORS_ALLOW_ALL_ORIGINS = True # Set to False in production
 
 ROOT_URLCONF = 'haultrackrbackend.urls'
 
