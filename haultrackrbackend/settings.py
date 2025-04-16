@@ -64,7 +64,7 @@ MIDDLEWARE = [
 # Allow requests from your React app's domain
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # For local development
-    "https://haul-trackr.vercel.app/",  # For production
+    "https://haul-trackr.vercel.app",  # For production
 ]
 
 # For simplicity in development
