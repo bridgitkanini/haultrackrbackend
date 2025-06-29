@@ -15,4 +15,3 @@ class LogSheetViewSet(viewsets.ReadOnlyModelViewSet):
         if trip_id is not None:
             queryset = queryset.filter(trip__id=trip_id)
         return queryset
-
