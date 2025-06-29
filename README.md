@@ -2,6 +2,18 @@
 
 HaulTrackr is a full-stack application designed to help truck drivers plan routes and manage Electronic Logging Device (ELD) logs. The system takes into account Hours of Service (HOS) regulations, fuel stops, and rest requirements to generate optimal routes and compliant log sheets.
 
+## Table of Contents
+
+- [System Architecture](#system-architecture)
+- [Features](#features)
+- [Technical Stack](#technical-stack)
+- [Core Components](#core-components)
+- [Data Models](#data-models)
+- [API Endpoints](#api-endpoints)
+- [Setup Instructions](#setup-instructions)
+- [Configuration](#configuration)
+- [Contributing](#contributing)
+
 ## System Architecture
 
 ```mermaid
@@ -213,5 +225,3 @@ The system uses the following configuration parameters:
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-
