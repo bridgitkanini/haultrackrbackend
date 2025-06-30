@@ -2,6 +2,13 @@
 
 HaulTrackr is a full-stack application designed to help truck drivers plan routes and manage Electronic Logging Device (ELD) logs. The system takes into account Hours of Service (HOS) regulations, fuel stops, and rest requirements to generate optimal routes and compliant log sheets.
 
+
+
+![Python Version](https://img.shields.io/badge/python-3.13-blue)
+![Django Version](https://img.shields.io/badge/django-5.1.7-green)
+
+
+
 ## Table of Contents
 
 - [System Architecture](#system-architecture)
@@ -10,9 +17,11 @@ HaulTrackr is a full-stack application designed to help truck drivers plan route
 - [Core Components](#core-components)
 - [Data Models](#data-models)
 - [API Endpoints](#api-endpoints)
+- [API Documentation (Swagger)](#api-documentation-swagger)
 - [Authentication](#authentication)
 - [Setup Instructions](#setup-instructions)
 - [Configuration](#configuration)
+- [Testing](#testing)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -101,6 +110,9 @@ graph TB
   - Stop scheduling
   - Log generation
   - Visual grid creation
+- **drf-yasg** for Swagger/OpenAPI documentation
+- **SimpleJWT** for JWT authentication
+- **django-cors-headers** for CORS
 
 ### Frontend (React)
 
@@ -198,9 +210,18 @@ The API is structured around REST principles. All endpoints are available under 
 - `POST /duty-status/`: Create a new duty status change for one of the user's log sheets.
 - `GET /duty-status/{id}/`: Get a specific duty status change.
 
+## API Documentation (Swagger)
+
+Interactive API documentation is available:
+
+- **Swagger UI:** [http://localhost:8000/swagger/](http://localhost:8000/swagger/)
+- **ReDoc:** [http://localhost:8000/redoc/](http://localhost:8000/redoc/)
+
+You can use these interfaces to explore and test all API endpoints.
+
 ## Authentication
 
-This project uses JSON Web Token (JWT) for authentication. To access protected endpoints, you must first register an account, obtain a token, and include it in the `Authorization` header of your requests.
+This project uses JSON Web Token (JWT) for authentication, powered by [SimpleJWT](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/).
 
 ### Registration
 
@@ -248,50 +269,94 @@ Include the `access` token in the `Authorization` header of your requests to pro
 Authorization: Bearer <your_access_token>
 ```
 
-
 ## Setup Instructions
 
-1. Clone the repository
-2. Create and activate virtual environment:
+1. **Clone the repository:**
+
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   git clone <repo-url>
+   cd haultrackrbackend
    ```
-3. Install dependencies:
+
+2. **Create and activate a virtual environment:**
+
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies:**
+
    ```bash
    pip install -r requirements.txt
    ```
-4. Set up environment variables:
-   - Create `.env` file
-   - Add required API keys
-5. Run migrations:
+
+4. **Set environment variables:**
+
+   - Create a `.env` file or set the following variables in your shell:
+     - `SECRET_KEY` (if overriding default)
+     - `ORS_API_KEY` (for OpenRouteService, if used)
+     - Any other API keys or secrets
+
+5. **Apply migrations:**
+
    ```bash
    python manage.py migrate
    ```
-6. Start the development server:
+
+6. **Run the development server:**
+
    ```bash
    python manage.py runserver
    ```
 
+7. **Access the API and documentation:**
+   - API root: [http://localhost:8000/api/](http://localhost:8000/api/)
+   - Swagger: [http://localhost:8000/swagger/](http://localhost:8000/swagger/)
+   - ReDoc: [http://localhost:8000/redoc/](http://localhost:8000/redoc/)
+
 ## Configuration
 
-The system uses the following configuration parameters:
+- **CORS:**  
+  The backend is configured to allow requests from the React frontend (localhost:5173 and production domain).  
+  Update `CORS_ALLOWED_ORIGINS` in `settings.py` as needed.
+- **Database:**  
+  Uses SQLite by default. To use PostgreSQL, update the `DATABASES` setting in `settings.py`:
+  ```python
+  DATABASES = {
+      "default": {
+          "ENGINE": "django.db.backends.postgresql",
+          "NAME": "<your-db-name>",
+          "USER": "<your-db-user>",
+          "PASSWORD": "<your-db-password>",
+          "HOST": "localhost",
+          "PORT": "5432",
+      }
+  }
+  ```
 
-- `OPENROUTE_API_KEY` - API key for OpenRouteService
-- `FUEL_STOP_INTERVAL_MILES` - Distance between fuel stops (default: 1000)
-- `MAX_DRIVING_HOURS` - Maximum continuous driving hours (default: 11)
-- `MAX_ON_DUTY_HOURS` - Maximum on-duty hours (default: 14)
-- `REQUIRED_REST_HOURS` - Required rest period (default: 10)
+## Testing
+
+To run the test suite:
+
+```bash
+python manage.py test
+```
+
+Add and maintain tests in the `tests.py` files within each app.
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+> **UPDATED SECTION**
+
+Contributions are welcome! Please open issues or submit pull requests.
+
+- Fork the repo and create your branch from `main`.
+- Ensure code passes all tests.
+- Follow PEP8 and Django best practices.
+
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
