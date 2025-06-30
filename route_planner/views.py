@@ -6,9 +6,12 @@ import requests
 import json
 import math
 from datetime import datetime, timedelta
-from .models import Trip
-from .serializers import TripSerializer
+from .models import Trip, RestStop
+from .serializers import TripSerializer, TripPlanSerializer
 from eld_logs.models import LogSheet
+from .services.routing_service import RoutingService, RoutingError
+from .services.stop_planner import StopPlanner, StopPlanningError
+from eld_logs.services.log_generator import LogGenerator, LogGenerationError
 
 # Create your views here.
 
@@ -16,30 +19,43 @@ class TripViewSet(viewsets.ModelViewSet):
     queryset = Trip.objects.all()
     serializer_class = TripSerializer
     
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['post'], url_path='plan')
     def plan_route(self, request, pk=None):
+        """
+        Generates a full trip plan including route, stops, and ELD logs.
+        """
         trip = self.get_object()
         
-        # Call external mapping API to get route information
-        # For example, using OpenRouteService (free)
-        api_key = 'your_api_key'  # You'll need to sign up for a free API key
-        
-        # Get coordinates for locations (geocoding)
-        # In a real app, you'd handle errors and edge cases
-        current_coords = self._geocode_location(trip.current_location, api_key)
-        pickup_coords = self._geocode_location(trip.pickup_location, api_key)
-        dropoff_coords = self._geocode_location(trip.dropoff_location, api_key)
-        
-        # Get route between points
-        route_data = self._get_route(current_coords, pickup_coords, dropoff_coords, api_key)
-        
-        # Calculate ELD logs based on route
-        logs = self._generate_eld_logs(trip, route_data)
-        
-        return Response({
-            'route': route_data,
-            'logs': logs
-        })
+        try:
+            # 1. Calculate the route using the routing service
+            routing_service = RoutingService()
+            route_data = routing_service.calculate_route(trip)
+            
+            # 2. Plan the stops using the stop planner service
+            stop_planner = StopPlanner(trip, route_data)
+            stops = stop_planner.plan_stops()
+            RestStop.objects.bulk_create(stops) # Save stops to the database
+            
+            # 3. Generate the ELD logs using the log generator service
+            log_generator = LogGenerator(trip)
+            logs = log_generator.generate_logs()
+            
+            # 4. Serialize the full plan into a single response
+            plan_data = {
+                'trip': trip,
+                'route_data': route_data,
+                'stops': stops,
+                'logs': logs
+            }
+            serializer = TripPlanSerializer(plan_data)
+            
+            return Response(serializer.data, status=status.HTTP_200_OK)
+            
+        except (RoutingError, StopPlanningError, LogGenerationError) as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            # Catch any other unexpected errors
+            return Response({'error': f'An unexpected error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     def _geocode_location(self, location_name, api_key):
         # In a real app, add error handling

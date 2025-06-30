@@ -20,7 +20,7 @@ class LogSheet(models.Model):
     class Meta:
         ordering = ['-date']
         unique_together = ['trip', 'date']
-
+    
     def __str__(self):
         return f"Log for {self.date} - Trip {self.trip.id}"
 
