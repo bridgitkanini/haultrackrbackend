@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # Your apps
     'eld_logs',
     'route_planner',
+    'users',
 ]
 
 MIDDLEWARE = [
