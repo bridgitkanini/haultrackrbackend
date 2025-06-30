@@ -10,9 +10,11 @@ HaulTrackr is a full-stack application designed to help truck drivers plan route
 - [Core Components](#core-components)
 - [Data Models](#data-models)
 - [API Endpoints](#api-endpoints)
+- [Authentication](#authentication)
 - [Setup Instructions](#setup-instructions)
 - [Configuration](#configuration)
 - [Contributing](#contributing)
+- [License](#license)
 
 ## System Architecture
 
@@ -168,17 +170,84 @@ class LogSheet:
 
 ## API Endpoints
 
+The API is structured around REST principles. All endpoints are available under the `/api/` prefix.
+
+### Authentication Endpoints
+
+- `POST /users/register/`: Create a new user account.
+- `POST /token/`: Obtain a JWT access and refresh token pair.
+- `POST /token/refresh/`: Refresh an expired access token using a refresh token.
+
 ### Trip Planning
 
-- `POST /api/trips/` - Create new trip
-- `GET /api/trips/{id}/` - Get trip details
-- `POST /api/trips/{id}/plan/` - Generate route plan
+- `GET /trips/`: List all trips for the authenticated user.
+- `POST /trips/`: Create a new trip.
+- `GET /trips/{id}/`: Retrieve details for a specific trip.
+- `POST /trips/{id}/plan/`: Generate a full route plan for a trip, including stops and logs.
 
 ### Log Management
 
-- `GET /api/logs/` - List all logs
-- `GET /api/logs/{id}/` - Get specific log
-- `POST /api/logs/generate/` - Generate new log
+- `GET /logs/`: List all log sheets for the authenticated user's trips.
+- `GET /logs/{id}/`: Get a specific log sheet.
+- `POST /logs/generate_logs/`: Generate log sheets for a given trip.
+- `GET /logs/{id}/grid/`: Get a visual grid image for a specific log sheet.
+
+### Duty Status Management
+
+- `GET /duty-status/`: List all duty status changes for the authenticated user.
+- `POST /duty-status/`: Create a new duty status change for one of the user's log sheets.
+- `GET /duty-status/{id}/`: Get a specific duty status change.
+
+## Authentication
+
+This project uses JSON Web Token (JWT) for authentication. To access protected endpoints, you must first register an account, obtain a token, and include it in the `Authorization` header of your requests.
+
+### Registration
+
+Create a new user by sending a `POST` request to the `/api/users/register/` endpoint.
+
+**Request:**
+
+```json
+{
+  "username": "your_username",
+  "password": "your_password",
+  "email": "user@example.com"
+}
+```
+
+### Logging In (Obtaining a Token)
+
+Once registered, you can obtain an access and refresh token pair by sending a `POST` request to the `/api/token/` endpoint.
+
+**Request:**
+
+```json
+{
+  "username": "your_username",
+  "password": "your_password"
+}
+```
+
+**Response:**
+
+```json
+{
+  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+### Making Authenticated Requests
+
+Include the `access` token in the `Authorization` header of your requests to protected endpoints, prefixed with "Bearer".
+
+**Example Header:**
+
+```
+Authorization: Bearer <your_access_token>
+```
+
 
 ## Setup Instructions
 
@@ -225,3 +294,4 @@ The system uses the following configuration parameters:
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
