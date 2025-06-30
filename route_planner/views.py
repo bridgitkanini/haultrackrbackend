@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 import requests
 import json
 import math
@@ -16,8 +17,21 @@ from eld_logs.services.log_generator import LogGenerator, LogGenerationError
 # Create your views here.
 
 class TripViewSet(viewsets.ModelViewSet):
-    queryset = Trip.objects.all()
     serializer_class = TripSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the trips
+        for the currently authenticated user.
+        """
+        return Trip.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        """
+        Assign the current user to the trip.
+        """
+        serializer.save(user=self.request.user)
     
     @action(detail=True, methods=['post'], url_path='plan')
     def plan_route(self, request, pk=None):

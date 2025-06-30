@@ -211,4 +211,4 @@ class LogGenerator:
             [(start_x, top_y), (end_x, top_y + self.STATUS_HEIGHT)],
             fill=self.STATUS_COLORS[status_change.status],
             outline='black'
-        ) 
+        )

@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 from django.utils import timezone
 from ..models import Trip, RestStop
-from ...haultrackrbackend.config import (
+from haultrackrbackend.config import (
     FUEL_STOP_INTERVAL_MILES,
     MAX_DRIVING_HOURS,
     REQUIRED_REST_HOURS

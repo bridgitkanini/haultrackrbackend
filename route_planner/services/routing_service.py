@@ -7,7 +7,7 @@ from typing import Dict, List, Tuple, Optional
 from django.core.cache import cache
 from django.conf import settings
 from ..models import Trip
-from ...haultrackrbackend.config import (
+from haultrackrbackend.config import (
     OPENROUTE_API_KEY,
     OPENROUTE_BASE_URL,
     CACHE_TIMEOUT
