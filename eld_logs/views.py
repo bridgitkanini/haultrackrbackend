@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from .models import LogSheet, DutyStatusChange
 from .serializers import LogSheetSerializer, DutyStatusChangeSerializer
 from .services.log_generator import LogGenerator
@@ -10,15 +11,16 @@ from route_planner.models import Trip
 # Create your views here.
 
 class LogSheetViewSet(viewsets.ModelViewSet):
-    queryset = LogSheet.objects.all()
     serializer_class = LogSheetSerializer
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        queryset = LogSheet.objects.all()
-        trip_id = self.request.query_params.get('trip_id', None)
-        if trip_id is not None:
-            queryset = queryset.filter(trip__id=trip_id)
-        return queryset
+        """
+        This view should return a list of all the log sheets
+        for trips belonging to the currently authenticated user.
+        """
+        user = self.request.user
+        return LogSheet.objects.filter(trip__user=user)
     
     @action(detail=False, methods=['post'])
     def generate_logs(self, request):
@@ -33,7 +35,7 @@ class LogSheetViewSet(viewsets.ModelViewSet):
             )
         
         try:
-            trip = get_object_or_404(Trip, id=trip_id)
+            trip = get_object_or_404(Trip, id=trip_id, user=request.user)
             generator = LogGenerator(trip)
             log_sheets = generator.generate_logs()
             
@@ -68,12 +70,23 @@ class LogSheetViewSet(viewsets.ModelViewSet):
             )
 
 class DutyStatusChangeViewSet(viewsets.ModelViewSet):
-    queryset = DutyStatusChange.objects.all()
     serializer_class = DutyStatusChangeSerializer
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        queryset = DutyStatusChange.objects.all()
-        log_sheet_id = self.request.query_params.get('log_sheet_id', None)
-        if log_sheet_id is not None:
-            queryset = queryset.filter(log_sheet__id=log_sheet_id)
-        return queryset
+        """
+        This view should return a list of all duty status changes
+        for log sheets belonging to the currently authenticated user.
+        """
+        user = self.request.user
+        return DutyStatusChange.objects.filter(log_sheet__trip__user=user)
+
+    def perform_create(self, serializer):
+        """
+        Validate that the log_sheet belongs to the current user.
+        """
+        log_sheet = serializer.validated_data['log_sheet']
+        if log_sheet.trip.user != self.request.user:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("You do not have permission to modify this log sheet.")
+        serializer.save()
