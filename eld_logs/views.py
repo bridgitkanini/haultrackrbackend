@@ -13,6 +13,7 @@ from route_planner.models import Trip
 class LogSheetViewSet(viewsets.ModelViewSet):
     serializer_class = LogSheetSerializer
     permission_classes = [IsAuthenticated]
+    queryset = LogSheet.objects.all()  # Add this line
     
     def get_queryset(self):
         """
@@ -72,6 +73,7 @@ class LogSheetViewSet(viewsets.ModelViewSet):
 class DutyStatusChangeViewSet(viewsets.ModelViewSet):
     serializer_class = DutyStatusChangeSerializer
     permission_classes = [IsAuthenticated]
+    queryset = DutyStatusChange.objects.all()  # Add this line too
     
     def get_queryset(self):
         """

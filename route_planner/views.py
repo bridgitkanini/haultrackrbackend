@@ -19,6 +19,7 @@ from eld_logs.services.log_generator import LogGenerator, LogGenerationError
 class TripViewSet(viewsets.ModelViewSet):
     serializer_class = TripSerializer
     permission_classes = [IsAuthenticated]
+    queryset = Trip.objects.all()  # Add this line
 
     def get_queryset(self):
         """
