@@ -2,12 +2,8 @@
 
 HaulTrackr is a full-stack application designed to help truck drivers plan routes and manage Electronic Logging Device (ELD) logs. The system takes into account Hours of Service (HOS) regulations, fuel stops, and rest requirements to generate optimal routes and compliant log sheets.
 
-
-
 ![Python Version](https://img.shields.io/badge/python-3.13-blue)
 ![Django Version](https://img.shields.io/badge/django-5.1.7-green)
-
-
 
 ## Table of Contents
 
@@ -355,8 +351,6 @@ Contributions are welcome! Please open issues or submit pull requests.
 - Ensure code passes all tests.
 - Follow PEP8 and Django best practices.
 
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
