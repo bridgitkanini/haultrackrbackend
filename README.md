@@ -343,8 +343,6 @@ Add and maintain tests in the `tests.py` files within each app.
 
 ## Contributing
 
-> **UPDATED SECTION**
-
 Contributions are welcome! Please open issues or submit pull requests.
 
 - Fork the repo and create your branch from `main`.
@@ -353,4 +351,4 @@ Contributions are welcome! Please open issues or submit pull requests.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://opensource.org/license/mit) for details.
